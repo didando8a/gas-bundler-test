@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  node:
+    build:
+      context: ./docker/node
+    working_dir: "/var/code/"
+    volumes:
+      - "./:/var/code:rw,cached"
+      - "node-cache:/root/.npm"
+
+volumes:
+  node-cache:

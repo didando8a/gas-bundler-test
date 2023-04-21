@@ -1,6 +1,6 @@
 {
-  "name": "@didando8a/gas_bundler",
-  "version": "1.0.0",
+  "name": "gas_bundler_test",
+  "version": "1.0.1",
   "description": "",
   "main": "scr/main.js",
   "scripts": {
@@ -8,5 +8,13 @@
   },
   "keywords": ["GAS", "Google App Scripts", "Bundler", "Test"],
   "author": "didando8a",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "eslint": "^8.19.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.20.2"
+  }
 }
