@@ -8,6 +8,13 @@ describe('concatenate files', () => {
         const expected = `
 
 
+// Adding file tests/fixtures/another/file_three.js
+
+function testTest() {
+    return p1;
+}
+
+
 // Adding file tests/fixtures/file_one.js
 
 function multiply_numbers(p1, p2) {
@@ -20,13 +27,6 @@ function multiply_numbers(p1, p2) {
 // Function to compute the product of p1 and p2
 function divide_numbers(p1, p2) {
     return p1 / p2;
-}
-
-
-// Adding file tests/fixtures/otro/file_three.js
-
-function testest() {
-    return p1;
 }
 
 return {
@@ -42,6 +42,13 @@ return {
         const expected = `
 
 
+// Adding file tests/fixtures/another/file_three.js
+
+function testTest() {
+    return p1;
+}
+
+
 // Adding file tests/fixtures/file_one.js
 
 function multiply_numbers(p1, p2) {
@@ -54,13 +61,6 @@ function multiply_numbers(p1, p2) {
 // Function to compute the product of p1 and p2
 function divide_numbers(p1, p2) {
     return p1 / p2;
-}
-
-
-// Adding file tests/fixtures/otro/file_three.js
-
-function testest() {
-    return p1;
 }
 
 module.exports = {
@@ -79,6 +79,13 @@ module.exports = {
         const expected = `
 
 
+// Adding file tests/fixtures/another/file_three.js
+
+function testTest() {
+    return p1;
+}
+
+
 // Adding file tests/fixtures/file_one.js
 
 function multiply_numbers(p1, p2) {
@@ -91,13 +98,6 @@ function multiply_numbers(p1, p2) {
 // Function to compute the product of p1 and p2
 function divide_numbers(p1, p2) {
     return p1 / p2;
-}
-
-
-// Adding file tests/fixtures/otro/file_three.js
-
-function testest() {
-    return p1;
 }
 
 module.exports = {
