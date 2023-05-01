@@ -1,6 +1,6 @@
 {
   "name": "@didando8a/gas-bundler-test",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Bundle all files Google App Scripts (GAS) files into one, so it can be tested in nodejs",
   "type": "module",
   "main": "./src/main.js",

@@ -88,3 +88,11 @@ lint: ##@Quality Runs linting analysis
 
 lint-fix: ##@Quality Runs linting analysis automatically fixing what can be fixed
 	docker-compose run --no-deps --rm node npm run lint:fix
+
+###############
+### NPM ###
+###############
+
+publish: ##@Publish package to npm
+	docker-compose run --no-deps --rm node npm publish --access=public
+

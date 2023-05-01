@@ -132,7 +132,8 @@ ${this.fullPathToCreatedFile === null ? 'return' : 'module.exports ='} {
   /**
    *
    * @param exportNameList Functions and constants that want to be exported
-   * @param globalLibraryList libraries, functions, constants that are part of the GAS api and are meant to be mocked
+   * @param globalLibraryList libraries, functions, constants that are part of the GAS api
+   * and are meant to be mocked.
    *  Use it to mock a library used in GAS (for instance SpreadsheetApp) by adding it
    *  to the global object
    * @returns {(Function|void)} a function with All files concatenated in the order they
