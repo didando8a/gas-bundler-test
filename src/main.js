@@ -2,21 +2,37 @@ const path = require('path');
 const fs = require('fs');
 
 class Bundler {
+  #fileName = 'gasBundler.js';
+
   fullPathToFiles;
+
+  fullPathToCreatedFile = null;
 
   validFiles = ['.js'];
 
-  constructor(pathsToFiles) {
+  constructor(pathsToFiles, pathToCreatedFile = null) {
+    if (typeof pathToCreatedFile === 'string') {
+      const pathToCreatedFileDir = path.join(process.cwd(), pathToCreatedFile);
+      const isDirectory = fs.existsSync(pathToCreatedFileDir)
+          && fs.lstatSync(pathToCreatedFileDir).isDirectory();
+
+      if (!isDirectory) {
+        throw new Error(`Parameter 2 is of type string but ${pathToCreatedFile} is not a directory`);
+      }
+
+      this.fullPathToCreatedFile = pathToCreatedFileDir;
+    }
+
     if (typeof pathsToFiles === 'string') {
       const pathToDir = path.join(process.cwd(), pathsToFiles);
-      const stats = fs.statSync(pathToDir);
+      const isDirectory = fs.existsSync(pathToDir) && fs.lstatSync(pathToDir).isDirectory();
 
-      console.log(pathToDir);
-
-      if (!stats.isDirectory()) {
+      if (!isDirectory) {
         throw Error(`Parameter is of type string but ${pathToDir} is not a directory`);
       }
 
+      // SHOULD I PASS THE FULL PATH INSTEAD THEN CAT THE REMOVE
+      // THE PATH WHERE THE PROCESS IS RUNNING FROM?
       const arrayOfFiles = this.#getFilesFromDir(pathsToFiles, []);
 
       if (arrayOfFiles.length === 0) {
@@ -45,7 +61,7 @@ class Bundler {
 
     files.forEach((file) => {
       const newPath = path.join(pathToDir, file);
-      if (fs.statSync(newPath).isDirectory()) {
+      if (fs.existsSync(newPath) && fs.statSync(newPath).isDirectory()) {
         filesArray = this.#getFilesFromDir(newPath, filesArray);
       } else if (this.validFiles.includes(path.extname(newPath).toLowerCase())) {
         filesArray.push(newPath);
@@ -58,9 +74,9 @@ class Bundler {
   #getFilesFromList(pathsToFiles) {
     return pathsToFiles.map((pathToFile) => {
       const fullPathToFile = path.join(process.cwd(), pathToFile);
-      const stats = fs.statSync(fullPathToFile);
+      const isFile = fs.existsSync(fullPathToFile) && fs.lstatSync(fullPathToFile).isFile();
 
-      if (!stats.isFile()) {
+      if (!isFile) {
         throw Error(`${fullPathToFile} is not a not a file`);
       }
 
@@ -76,19 +92,9 @@ class Bundler {
    *
    * @param exportNameList Functions and constants that want to be exported
    * @param globalLibraryList libraries to be exported.
-   *  Use it to mock a library used in GAS (for instance SpreadsheetApp) by adding it
-   *  to the global object
-   * @returns {*} All files concatenated in the were added in the array
+   * @returns {*} All files concatenated in the order they were added in the array
    */
-  bundle(exportNameList, globalLibraryList = []) {
-    if (!Array.isArray(exportNameList) || exportNameList.length === 0) {
-      if (!Array.isArray(exportNameList)) {
-        throw Error('parameter 2 exportNameList must be of type array');
-      }
-
-      throw Error('parameter 2 exportNameList cannot be empty');
-    }
-
+  getContent(exportNameList, globalLibraryList = []) {
     let bundleFile = '';
 
     try {
@@ -107,29 +113,58 @@ class Bundler {
         bundleFile = ''.concat(bundleFile, newFileMarkTemplate, parsedFile);
       });
 
-      globalLibraryList.pop();
-      // globalLibraryList.forEach(globalLibName => {
-      //   bundleFile = ''.concat(`global.${globalLibName} = {}`, '\n', bundleFile)
-      // })
+      globalLibraryList.forEach((globalLibName) => {
+        bundleFile = ''.concat(`global.${globalLibName} = {}`, '\n', bundleFile);
+      });
     } catch (err) {
-      console.error(err);
+      throw Error(err);
     }
 
     const exportTemplate = `
-return {
-    ${exportNameList.join(', ')}
+${this.fullPathToCreatedFile === null ? 'return' : 'module.exports ='} {
+    ${exportNameList.join(',\n    ')},
 };
 `;
 
     return ''.concat(bundleFile, '\n', exportTemplate.toString());
-    // // eslint-disable-next-line no-new-func
-    // return Function(bundleFile + exportTemplate.toString())();
+  }
+
+  /**
+   *
+   * @param exportNameList Functions and constants that want to be exported
+   * @param globalLibraryList libraries to be exported.
+   *  Use it to mock a library used in GAS (for instance SpreadsheetApp) by adding it
+   *  to the global object
+   * @returns {(Function|void)} a function with All files concatenated in the order they
+   * were added in the array or write all files concatenated in the file specified in
+   * fullPathToCreatedFile
+   */
+  bundle(exportNameList, globalLibraryList = []) {
+    if (!Array.isArray(exportNameList) || exportNameList.length === 0) {
+      if (!Array.isArray(exportNameList)) {
+        throw Error('parameter 2 exportNameList must be of type array');
+      }
+
+      throw Error('parameter 2 exportNameList cannot be empty');
+    }
+
+    const bundleFile = this.getContent(exportNameList, globalLibraryList);
+
+    if (this.fullPathToCreatedFile === null) {
+      // eslint-disable-next-line no-new-func
+      return Function(bundleFile)();
+    }
+
+    try {
+      fs.writeFileSync(path.join(this.fullPathToCreatedFile, this.#fileName), bundleFile);
+      fs.chmodSync(path.join(this.fullPathToCreatedFile, this.#fileName), 0o666);
+    } catch (err) {
+      throw Error(err);
+    }
+
+    return undefined;
   }
 }
-
-// function createPathFromRunningProcessFolder (pathToFile) {
-//   return `${process.cwd()}/${pathToFile}`
-// }
 
 module.exports = {
   Bundler,
