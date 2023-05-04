@@ -1,6 +1,6 @@
 {
   "name": "@didando8a/gas-bundler-test",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Bundle all files Google App Scripts (GAS) files into one, so it can be tested in nodejs",
   "type": "module",
   "main": "./src/main.js",
@@ -25,5 +25,9 @@
     "eslint-plugin-n": "^15.7.0",
     "eslint-plugin-promise": "^6.1.1",
     "jest": "^29.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/didando8a/gas-bundler-test.git"
   }
 }
